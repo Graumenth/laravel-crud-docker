@@ -1,0 +1,6 @@
+/.idea/
+/manytomany/src/bootstrap/cache/
+/manytomany/src/storage/framework/
+/manytomany/src/vendor/
+/manytomany/src/.env
+/onetomany/.env
