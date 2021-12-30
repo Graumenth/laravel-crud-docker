@@ -20,3 +20,6 @@ Route::get('/', function () {
 Route::get('/create', 'Index@create');
 Route::get('/read', 'Index@read');
 Route::get('/update', 'Index@update');
+Route::get('/delete', 'Index@delete');
+Route::get('/assign', 'Index@assign');
+Route::get('/unassign', 'Index@unassign');
