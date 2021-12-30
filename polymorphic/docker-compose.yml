@@ -1,0 +1,96 @@
+version: "3.7"
+services:
+  app:
+    build:
+      args:
+        user: graumenth
+        uid: 1000
+      context: ./
+      dockerfile: Dockerfile
+    image: practice
+    container_name: practice
+    restart: unless-stopped
+    working_dir: /var/www/
+    volumes:
+      - ./src:/var/www
+    links:
+      - db
+    depends_on:
+      - db
+    networks:
+      - laravel
+
+  db:
+    image: mysql:5.7
+    container_name: practice-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: mysql
+      MYSQL_ALLOW_EMPTY_PASSWORD: yes
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - ./docker-compose/mysql:/docker-entrypoint-initdb.d
+    networks:
+      - laravel
+
+  nginx:
+    image: nginx:alpine
+    container_name: practice-nginx
+    restart: unless-stopped
+    ports:
+      - 80:80
+    volumes:
+      - ./src:/var/www
+      - ./docker-compose/nginx:/etc/nginx/conf.d/
+    networks:
+      - laravel
+
+  redis:
+    image: redis
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - 6379:6379
+    networks:
+      - laravel
+
+  npm:
+    image: node
+    container_name: npm
+    volumes:
+      - ./src:/var/www/html
+    ports:
+      - 3000:3000
+      - 3001:3001
+    working_dir: /var/www/html
+    entrypoint: [ 'npm' ]
+    networks:
+      - laravel
+
+  mailhog:
+    image: mailhog/mailhog
+    container_name: mailhog
+    ports:
+      - 1025:1025
+      - 8025:8025
+    networks:
+      - laravel
+
+  phpmyadmin:
+    image: phpmyadmin
+    restart: unless-stopped
+    container_name: phpmyadmin
+    ports:
+      - 8200:80
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: 123
+      MYSQL_PASSWORD: 123
+      MYSQL_USER: root
+    networks:
+      - laravel
+
+networks:
+  laravel:
+    driver: bridge
